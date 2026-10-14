@@ -1,0 +1,904 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Prep | Interview Revision</title>
+<style>
+:root {
+  --bg:#080d19; --panel:#111a2b; --panel2:#162239;
+  --cyan:#45e6e0; --violet:#ad8cff; --text:#e8eefb;
+  --muted:#9aa9c3; --border:#263550; --green:#65e6a5;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.7;
+}
+header{
+  padding:52px 20px 36px;
+  background:radial-gradient(ellipse at 15% 0%,#193b56 0%,transparent 55%),
+             radial-gradient(ellipse at 90% 0%,#38205e 0%,transparent 50%),var(--bg);
+  border-bottom:1px solid var(--border);
+}
+.container{max-width:1050px;margin:auto;padding:0 20px}
+.eyebrow{color:var(--cyan);font-size:.8rem;font-weight:800;letter-spacing:3px}
+h1{font-size:clamp(2.3rem,6vw,4rem);line-height:1.1;margin:12px 0}
+h1 span{color:var(--cyan)}
+.subtitle{color:var(--muted);max-width:700px}
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.stat{background:#ffffff09;border:1px solid var(--border);padding:12px 17px;border-radius:12px}
+.stat strong{color:var(--cyan);font-size:1.3rem;display:block}
+main{padding:28px 0 70px}
+.toolbar{
+  position:sticky;top:0;z-index:5;background:#080d19ed;
+  backdrop-filter:blur(12px);padding:15px 0;border-bottom:1px solid var(--border)
+}
+input[type=search]{
+  width:100%;padding:14px 16px;border-radius:12px;
+  background:var(--panel);border:1px solid var(--border);
+  color:var(--text);font-size:1rem;outline:none
+}
+input:focus{border-color:var(--cyan)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{
+  background:var(--panel2);color:var(--text);border:1px solid var(--border);
+  padding:9px 13px;border-radius:9px;cursor:pointer;font-size:.85rem
+}
+button:hover,button.active{border-color:var(--cyan);color:var(--cyan)}
+.progress-wrap{margin:18px 0 28px}
+.progress-label{display:flex;justify-content:space-between;color:var(--muted);font-size:.88rem}
+.progress{height:7px;background:var(--panel2);border-radius:20px;overflow:hidden;margin-top:8px}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet));transition:width .2s}
+.section-title{margin:36px 0 14px;font-size:1.35rem}
+.section-title span{color:var(--violet)}
+.card{
+  border:1px solid var(--border);background:var(--panel);
+  border-radius:14px;margin:12px 0;overflow:hidden;transition:border .2s
+}
+.card:hover{border-color:#526788}
+.card.done{border-color:#326c60}
+.question{
+  padding:17px 18px;display:flex;gap:13px;align-items:flex-start;cursor:pointer;
+  list-style:none;font-weight:650
+}
+.question::-webkit-details-marker{display:none}
+.qnum{color:var(--cyan);font-size:.82rem;min-width:30px;padding-top:3px}
+.qtext{flex:1}
+.chevron{color:var(--violet);font-size:1.1rem}
+.answer{padding:0 22px 22px 60px;color:#c6d1e5}
+.answer p{margin:10px 0}
+.answer h4{color:var(--cyan);margin:17px 0 5px}
+.answer ul,.answer ol{padding-left:21px}
+.answer li{margin:5px 0}
+.answer strong{color:#f4f7ff}
+.answer code{background:#07101e;color:var(--cyan);padding:2px 5px;border-radius:5px}
+.answer pre{white-space:pre-wrap;background:#07101e;padding:14px;border-radius:9px;overflow:auto}
+.tip{border-left:3px solid var(--violet);padding:10px 14px;background:#ad8cff0c;border-radius:0 8px 8px 0;margin-top:14px}
+.revise{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.83rem;margin-top:18px}
+.revise input{accent-color:var(--green)}
+#empty{display:none;padding:30px;text-align:center;color:var(--muted)}
+footer{text-align:center;color:var(--muted);border-top:1px solid var(--border);padding:25px;font-size:.85rem}
+@media(max-width:600px){
+ header{padding-top:35px}.answer{padding:0 17px 18px}
+ .question{padding:15px 13px}.qnum{min-width:25px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <div class="eyebrow">PLACEMENT PREPARATION / AI ENGINEERING</div>
+    <h1>RAG <span>Prep.</span></h1>
+    <p class="subtitle">Your complete Retrieval-Augmented Generation interview revision guide. Understand the fundamentals, master advanced retrieval techniques, and learn to debug production RAG systems.</p>
+    <div class="stats">
+      <div class="stat"><strong>42+</strong>Interview topics</div>
+      <div class="stat"><strong>4</strong>Learning sections</div>
+      <div class="stat"><strong>∞</strong>Offline revision</div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="🔎 Search questions, concepts, or keywords..." aria-label="Search questions">
+    <div class="filters">
+      <button class="active" data-filter="all">All topics</button>
+      <button data-filter="Fundamentals">Fundamentals</button>
+      <button data-filter="Retrieval">Retrieval</button>
+      <button data-filter="Advanced">Advanced RAG</button>
+      <button data-filter="Production">Production & Debugging</button>
+      <button id="expand">Expand all</button>
+      <button id="collapse">Collapse all</button>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>YOUR REVISION PROGRESS</span>
+      <span id="progressText">0 / 42 completed</span>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+  </div>
+
+  <div id="questions">
+
+  <h2 class="section-title">01 / <span>RAG Fundamentals</span></h2>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">01</span><span class="qtext">What is RAG, and why is it important?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>Retrieval-Augmented Generation (RAG)</strong> is a technique that retrieves relevant external information and provides it to a language model as context before generating an answer.</p>
+      <h4>Why use it?</h4>
+      <ul>
+        <li><strong>Grounded answers:</strong> Responses can be based on retrieved evidence.</li>
+        <li><strong>Fresh knowledge:</strong> Update the knowledge base without retraining the LLM.</li>
+        <li><strong>Private knowledge:</strong> Use internal documents, manuals, or company data.</li>
+        <li><strong>Traceability:</strong> Retrieved sources can support citations and verification.</li>
+        <li><strong>Cost:</strong> Often cheaper than fine-tuning a model just to teach it new facts.</li>
+      </ul>
+      <p>RAG does not guarantee correctness. Bad retrieval, misleading documents, or poor reasoning can still produce hallucinations.</p>
+      <div class="tip"><strong>Interview line:</strong> RAG connects an LLM's generative ability with an external, updateable knowledge source.</div>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">02</span><span class="qtext">Explain the basic architecture of a RAG system.</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>A typical RAG system has an <strong>offline indexing pipeline</strong> and an <strong>online query pipeline</strong>.</p>
+      <pre>OFFLINE
+Documents → Parse → Clean → Chunk → Embed → Index
+
+ONLINE
+User Query → Query Processing → Retrieve
+           → Rerank → Build Context → LLM
+           → Answer + Sources</pre>
+      <ul>
+        <li><strong>Indexing:</strong> Converts source documents into searchable representations.</li>
+        <li><strong>Retrieval:</strong> Finds chunks relevant to the user's question.</li>
+        <li><strong>Generation:</strong> Uses the retrieved context to formulate an answer.</li>
+      </ul>
+      <p>Some systems add hybrid search, query rewriting, access-control filters, a reranker, or an evaluation layer.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">03</span><span class="qtext">What are the key components of a RAG pipeline?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ol>
+        <li><strong>Document loaders:</strong> Read PDFs, webpages, DOCX files, databases, and other sources.</li>
+        <li><strong>Parser and cleaner:</strong> Extract meaningful text and remove noise.</li>
+        <li><strong>Chunker:</strong> Splits documents into manageable passages.</li>
+        <li><strong>Embedding model:</strong> Converts text into dense numerical vectors.</li>
+        <li><strong>Index / vector database:</strong> Stores vectors, text, and metadata.</li>
+        <li><strong>Retriever:</strong> Finds relevant documents using vector, lexical, or hybrid search.</li>
+        <li><strong>Reranker:</strong> Reorders candidates using a more precise relevance model.</li>
+        <li><strong>Prompt builder and LLM:</strong> Combine the query and evidence to generate an answer.</li>
+        <li><strong>Evaluation and monitoring:</strong> Measure retrieval quality, grounding, latency, and cost.</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">04</span><span class="qtext">What is chunking? How do you choose chunk size?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>Chunking</strong> splits a large document into smaller units that can be independently indexed and retrieved.</p>
+      <p>Very small chunks may lose context. Very large chunks may contain irrelevant information, reduce retrieval precision, and consume more context-window space.</p>
+      <p>There is no universally optimal chunk size. As an initial experiment, try approximately <strong>300–800 tokens</strong> with a modest overlap, then tune it against a representative evaluation dataset.</p>
+      <h4>Factors to consider</h4>
+      <ul>
+        <li>Document structure and average paragraph length.</li>
+        <li>Question types and how much context answers typically require.</li>
+        <li>Embedding model and model context-window limits.</li>
+        <li>Retrieval recall, precision, latency, and token cost.</li>
+      </ul>
+      <p>Keep headings and source metadata with each chunk. Preserve tables and code as coherent units where possible.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">05</span><span class="qtext">Compare fixed-size, semantic, and recursive chunking.</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>Fixed-size:</strong> Splits by a set token or character length. Simple, fast, and predictable, but may cut ideas in half.</li>
+        <li><strong>Recursive:</strong> Tries separators in order, such as sections, paragraphs, sentences, and finally smaller units. A practical general-purpose default.</li>
+        <li><strong>Semantic:</strong> Uses meaning or embedding similarity to identify topic boundaries. Can preserve coherent ideas but requires more computation and tuning.</li>
+      </ul>
+      <p><strong>Example:</strong> A legal contract benefits from section-aware recursive splitting. A long narrative with topic transitions may benefit from semantic splitting.</p>
+      <div class="tip">Choose based on measured retrieval quality, not on the assumption that the most sophisticated method is always best.</div>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">06</span><span class="qtext">What is Contextual Retrieval?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>Contextual Retrieval</strong> enriches a chunk with explanatory context from its parent document before indexing it, helping a standalone passage retain information that would otherwise be lost.</p>
+      <p>Example chunk: “It increased by 15%.”</p>
+      <p>Without context, the subject is unclear. Enrichment might produce: “In the 2025 sales report, revenue increased by 15% year over year.”</p>
+      <p>The enriched representation can be used for embeddings and/or lexical indexing, while the original passage is preserved for citations and answer generation.</p>
+      <p>Benefits include better retrieval for references, acronyms, and isolated statements. Trade-offs include preprocessing cost, extra index storage, and the risk of introducing incorrect context.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">07</span><span class="qtext">What are embeddings? How does text become a vector?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>An <strong>embedding</strong> is a numerical vector produced by a trained model to represent information in a space where semantic relationships can be compared.</p>
+      <ol>
+        <li>Tokenize the text.</li>
+        <li>Pass the tokens through the embedding model.</li>
+        <li>Pool or otherwise transform model representations into a fixed-size vector.</li>
+        <li>Store the vector with the text and metadata.</li>
+        <li>Embed the query using a compatible model and compare it with indexed vectors.</li>
+      </ol>
+      <p>Similarity is often measured with cosine similarity, dot product, or Euclidean distance, depending on the model and index configuration.</p>
+      <p>Semantically similar passages may have nearby vectors, but embeddings do not understand facts perfectly and can struggle with exact identifiers or subtle negation.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">08</span><span class="qtext">How do you choose an embedding model?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>Retrieval quality:</strong> Benchmark on your actual domain and questions.</li>
+        <li><strong>Language coverage:</strong> Check multilingual and domain-specific performance.</li>
+        <li><strong>Latency and throughput:</strong> Consider indexing and query-time speed.</li>
+        <li><strong>Vector dimension:</strong> Higher dimensions can increase storage and search costs.</li>
+        <li><strong>Deployment:</strong> Compare hosted APIs with local models and their privacy implications.</li>
+        <li><strong>Licensing and cost:</strong> Check commercial-use rights, pricing, and infrastructure requirements.</li>
+      </ul>
+      <p>Use a fixed evaluation set and compare Recall@k, MRR or nDCG, latency, and cost. Query and document encoding may use different instructions or modes for some embedding models.</p>
+      <p><strong>Important:</strong> If you change the embedding model, you generally need to re-embed the corpus. Vectors from incompatible embedding spaces should not be compared directly.</p>
+    </div>
+  </details>
+
+  <h2 class="section-title">02 / <span>Retrieval & Search</span></h2>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">09</span><span class="qtext">What is Agentic RAG?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>In <strong>Agentic RAG</strong>, an LLM or agent decides which retrieval actions to take, potentially across multiple steps, tools, or knowledge sources.</p>
+      <p>A simple RAG pipeline usually follows a fixed retrieve-then-generate path. Agentic RAG can rewrite queries, retrieve again, call SQL tools, inspect evidence, and decide whether it has enough information.</p>
+      <p><strong>Advantages:</strong> Flexible workflows, iterative retrieval, multi-step reasoning.</p>
+      <p><strong>Disadvantages:</strong> More latency, cost, complexity, and opportunities for incorrect tool use.</p>
+      <p>Use it when questions genuinely require multiple actions. Prefer ordinary RAG for straightforward questions because it is easier to test and operate.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Retrieval">
+    <summary class="question"><span class="qnum">10</span><span class="qtext">Hybrid search vs. pure vector search?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>Vector search</strong> retrieves by semantic similarity. <strong>Lexical search</strong>, such as BM25, retrieves based on matching terms and their statistical importance.</p>
+      <ul>
+        <li>Vector search is useful for paraphrases and conceptually related questions.</li>
+        <li>BM25 is useful for exact names, error codes, product IDs, acronyms, and rare keywords.</li>
+        <li>Hybrid search combines both, often using Reciprocal Rank Fusion (RRF) or a learned combination.</li>
+      </ul>
+      <p>For example, a query about error code <code>ERR-4921</code> may benefit greatly from lexical matching even if the semantic embedding is weak.</p>
+      <p>Hybrid search is a strong baseline for varied enterprise documents, but its value should be verified on the target corpus.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Retrieval">
+    <summary class="question"><span class="qnum">11</span><span class="qtext">What is reranking, and why is it useful?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Reranking is a second-stage ranking step applied to an initial set of retrieved candidates.</p>
+      <pre>Query → Retrieve top 50 candidates
+      → Rerank candidates
+      → Keep best 5–10
+      → Generate answer</pre>
+      <p>A bi-encoder embedding model encodes the query and documents separately, enabling efficient candidate retrieval. A cross-encoder evaluates the query and each candidate together, usually yielding a more query-specific relevance score.</p>
+      <p>Reranking can improve the quality of the final context, but adds compute and latency. Retrieve enough candidates for good recall, then rerank a manageable set.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Retrieval">
+    <summary class="question"><span class="qnum">12</span><span class="qtext">What is ColBERT and what is late interaction?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>ColBERT</strong> is a neural retrieval approach that uses token-level representations for both the query and document instead of compressing each into a single vector.</p>
+      <p>In late interaction, query and document tokens are encoded separately. At scoring time, each query token is matched against document token representations, and the best matches are aggregated, commonly with a MaxSim-style operation.</p>
+      <p>This preserves more fine-grained token matching than a single-vector embedding while allowing document representations to be precomputed.</p>
+      <p>Its trade-off is greater index size and more complex scoring compared with simple single-vector retrieval.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Retrieval">
+    <summary class="question"><span class="qnum">13</span><span class="qtext">Compare cross-encoder, ColBERT, and LLM rerankers.</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>Cross-encoder:</strong> Processes the query and each candidate together. Strong pairwise relevance scoring, but candidates are scored individually.</li>
+        <li><strong>ColBERT / late interaction:</strong> Uses token-level representations and efficient interaction scoring. Can balance fine-grained matching and retrieval throughput.</li>
+        <li><strong>LLM reranker:</strong> Uses a generative model to assess relevance or order candidates. Flexible for complex criteria but may be expensive, slow, and sensitive to prompt design.</li>
+      </ul>
+      <p>Choose using retrieval metrics, latency, cost, hardware, and corpus scale. A small cross-encoder often provides an effective production baseline.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Retrieval">
+    <summary class="question"><span class="qnum">14</span><span class="qtext">How do you answer questions that require multiple documents?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>These are multi-document or multi-hop questions. A single retrieval step may find only one part of the evidence.</p>
+      <ol>
+        <li>Identify the separate facts or subquestions needed.</li>
+        <li>Decompose the original query into targeted subqueries.</li>
+        <li>Retrieve evidence for each subquestion.</li>
+        <li>Deduplicate, rerank, and retain the evidence with source identifiers.</li>
+        <li>Combine the evidence and verify that it supports the final conclusion.</li>
+      </ol>
+      <p>Graph-based retrieval, iterative retrieval, or an agent can help when the evidence is linked across entities or documents. Do not assume that the LLM can infer a missing fact simply because it has some relevant passages.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">15</span><span class="qtext">What is the “Lost in the Middle” problem?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>LLMs can use information less reliably when relevant evidence appears in the middle of a long context than when it appears near the beginning or end. The effect varies across models and tasks.</p>
+      <p>Mitigation strategies:</p>
+      <ul>
+        <li>Retrieve fewer, higher-quality passages.</li>
+        <li>Place the strongest evidence prominently in the prompt.</li>
+        <li>Remove redundant and irrelevant chunks.</li>
+        <li>Use reranking and context compression.</li>
+        <li>Evaluate evidence placement with the actual target model.</li>
+      </ul>
+      <p>A larger context window is not a substitute for good retrieval and context organization.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">16</span><span class="qtext">How do you evaluate a RAG system?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Evaluate retrieval and generation separately, then assess the complete system.</p>
+      <ul>
+        <li><strong>Context precision:</strong> How much of the retrieved context is relevant?</li>
+        <li><strong>Context recall:</strong> How much of the needed evidence was retrieved?</li>
+        <li><strong>Faithfulness:</strong> Are the claims in the answer supported by the supplied context?</li>
+        <li><strong>Answer relevance:</strong> Does the response address the question?</li>
+        <li><strong>Correctness:</strong> Does the answer match a trusted reference answer or verified facts?</li>
+        <li><strong>Retrieval metrics:</strong> Recall@k, Precision@k, MRR, and nDCG.</li>
+        <li><strong>Operations:</strong> Latency percentiles, error rates, cost per query, and throughput.</li>
+      </ul>
+      <p>Use a representative, held-out evaluation dataset. Automated LLM-as-judge metrics are useful but should be calibrated against human judgments and known examples.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">17</span><span class="qtext">What is Self-RAG? How does it decide when to retrieve?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>Self-RAG</strong> is a framework that trains a model to reflect on retrieval and generation, using special reflection tokens to guide decisions about retrieving, assessing relevance, and evaluating support for generated claims.</p>
+      <p>Its key idea is that retrieval should not be blindly applied to every query. A system should consider whether external evidence is necessary and whether the retrieved evidence is useful.</p>
+      <p>A simpler production implementation can use a query classifier or an LLM-based router to decide between direct answering, retrieval, or clarification. This is inspired by adaptive retrieval, but is not identical to the original Self-RAG method.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">18</span><span class="qtext">GraphRAG vs. traditional RAG?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>Traditional RAG</strong> typically retrieves text passages using vector, lexical, or hybrid search.</p>
+      <p><strong>GraphRAG</strong> organizes information around entities and relationships in a graph. Some implementations also create summaries of graph communities to answer broader, corpus-level questions.</p>
+      <ul>
+        <li>Traditional RAG is usually simpler and effective for passage-level questions.</li>
+        <li>GraphRAG can help with relationship-heavy, multi-hop, or global questions spanning many documents.</li>
+        <li>Graph construction, entity resolution, and graph maintenance introduce additional cost and complexity.</li>
+      </ul>
+      <p>Use graph-based approaches when relationship structure adds measurable value, not merely because a knowledge graph sounds advanced.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">19</span><span class="qtext">What is Vectorless RAG?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p><strong>Vectorless RAG</strong> is a broad term for retrieval approaches that do not rely on dense vector similarity as their primary search mechanism.</p>
+      <p>Examples include BM25, full-text search, SQL queries, metadata filtering, structured indexes, and search over document summaries or hierarchies.</p>
+      <p>It can be useful for exact terms, structured facts, identifiers, or situations where embedding generation and vector storage are undesirable.</p>
+      <p>It does not mean retrieval disappears. It means the system uses other representations or search mechanisms. Many practical systems combine vectorless methods with vector retrieval.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">20</span><span class="qtext">How do you handle structured data, tables, and SQL in RAG?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>First identify whether the question requires unstructured text, exact structured values, or both.</p>
+      <ul>
+        <li><strong>Structured facts:</strong> Query the relational database using SQL.</li>
+        <li><strong>Explanations and policies:</strong> Retrieve relevant documents.</li>
+        <li><strong>Mixed questions:</strong> Combine SQL results and document evidence.</li>
+      </ul>
+      <p>For tables, preserve headers, units, row relationships, and captions. A row should retain the column names that give its values meaning.</p>
+      <p>For text-to-SQL, validate generated queries, use read-only permissions, allowlist tables and columns, enforce timeouts, and never trust model-generated SQL blindly.</p>
+      <div class="tip">A vector database is not a replacement for a relational database when the task requires exact aggregation, joins, or filtering.</div>
+    </div>
+  </details>
+
+  <h2 class="section-title">03 / <span>Advanced RAG Techniques</span></h2>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">21</span><span class="qtext">What are common RAG failure modes, and how do you debug them?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>Relevant document not retrieved:</strong> Inspect query formulation, chunking, embeddings, filters, and search settings.</li>
+        <li><strong>Relevant document retrieved but ranked low:</strong> Try hybrid search, increase candidate depth, or add reranking.</li>
+        <li><strong>Correct evidence but incorrect answer:</strong> Check prompt instructions, context ordering, conflicts, and generation behavior.</li>
+        <li><strong>Incomplete answer:</strong> Check whether all necessary evidence was retrieved.</li>
+        <li><strong>Stale answer:</strong> Check ingestion timestamps, deletion handling, and index freshness.</li>
+        <li><strong>Wrong source:</strong> Check metadata, permissions, ranking, and duplicate content.</li>
+      </ul>
+      <p>Log the query, rewritten query, retrieved chunk IDs and scores, filters, final context, answer, and latency for each stage. Reproduce failures with a test dataset before changing the system.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">22</span><span class="qtext">How do you handle document updates and freshness?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ol>
+        <li>Assign stable document IDs and track versions or content hashes.</li>
+        <li>Detect new, modified, and deleted documents.</li>
+        <li>Re-parse and re-embed changed content only when appropriate.</li>
+        <li>Upsert the latest chunks and remove obsolete chunks.</li>
+        <li>Track ingestion status, timestamps, and indexing errors.</li>
+        <li>Use versioned or staged indexes where safe deployment is necessary.</li>
+      </ol>
+      <p>For frequently changing facts, consider querying the authoritative database directly. Define acceptable freshness and monitor the delay between a source update and retrieval availability.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">23</span><span class="qtext">How do you optimize RAG latency?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li>Use efficient approximate nearest-neighbor indexes where appropriate.</li>
+        <li>Reduce unnecessary query rewriting and repeated retrieval calls.</li>
+        <li>Retrieve a sensible candidate count, then rerank a smaller set.</li>
+        <li>Cache query embeddings or retrieval results when safe and useful.</li>
+        <li>Parallelize independent retrieval calls.</li>
+        <li>Limit final context size and avoid unnecessary prompt tokens.</li>
+        <li>Stream generated responses when appropriate.</li>
+        <li>Measure latency by stage and optimize the actual bottleneck.</li>
+      </ul>
+      <p>Track p50, p95, and p99 latency, not only average latency. Caching must respect permissions, freshness, and tenant boundaries.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">24</span><span class="qtext">How does metadata filtering work in RAG?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Metadata filtering restricts the searchable documents using attributes such as tenant ID, access level, document type, date, department, or language.</p>
+      <p>For example, a search may retrieve semantically relevant passages only from the user's permitted department and the latest approved policies.</p>
+      <p>Filters may be applied before retrieval, during candidate selection, or through a post-filtering step, depending on the search engine.</p>
+      <p>Pre-filtering can improve relevance and security, while post-filtering may leave too few results. Security-sensitive restrictions must be enforced by trusted backend logic, not merely by an LLM-generated filter.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Fundamentals">
+    <summary class="question"><span class="qnum">25</span><span class="qtext">RAG vs. fine-tuning: when should you use each?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>RAG:</strong> Best when answers depend on changing facts, private documents, citations, or a large external knowledge base.</li>
+        <li><strong>Fine-tuning:</strong> Best when you want to change model behavior, style, task performance, or output patterns using training examples.</li>
+        <li><strong>Both:</strong> Fine-tune for a desired behavior and use RAG to provide current, task-specific evidence.</li>
+      </ul>
+      <p>Fine-tuning is not a reliable substitute for an updateable knowledge source. RAG is not a substitute for training when the model consistently lacks the behavior needed to perform a task.</p>
+      <div class="tip">Interview shortcut: facts that change → consider RAG; behavior that must change → consider fine-tuning.</div>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">26</span><span class="qtext">Why not just put the entire knowledge base into a long context window?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>Token cost:</strong> Large prompts consume more input tokens.</li>
+        <li><strong>Latency:</strong> Processing lengthy contexts may be slower.</li>
+        <li><strong>Attention dilution:</strong> Relevant facts can be overlooked among irrelevant information.</li>
+        <li><strong>Scale:</strong> The corpus may exceed the model's context limit.</li>
+        <li><strong>Access control:</strong> Selective retrieval can reduce unnecessary exposure of sensitive data.</li>
+      </ul>
+      <p>Long context can be useful for small corpora, complete-document reasoning, or tasks where many passages must be considered together. RAG is generally more scalable when the knowledge base is large.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">27</span><span class="qtext">Explain HyDE, query decomposition, and step-back prompting.</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>HyDE:</strong> Generates a hypothetical answer or document from the query, embeds that text, and uses the vector to retrieve potentially relevant real documents. The hypothetical text is a retrieval aid, not trusted evidence.</li>
+        <li><strong>Query decomposition:</strong> Splits a complex question into smaller subquestions and retrieves evidence for each.</li>
+        <li><strong>Step-back prompting:</strong> Reframes a specific question into a broader conceptual question to retrieve underlying principles or background knowledge.</li>
+      </ul>
+      <p>These techniques can improve recall for difficult queries but may add latency and introduce query drift. Evaluate them against simpler retrieval before deploying them.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">28</span><span class="qtext">How do you implement citations and source attribution?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ol>
+        <li>Store source IDs, document titles, page numbers, URLs, and chunk offsets during ingestion.</li>
+        <li>Carry source metadata through retrieval and reranking.</li>
+        <li>Ask the LLM to cite only supplied source identifiers.</li>
+        <li>Validate that every cited identifier exists in the retrieved context.</li>
+        <li>Where possible, verify that the cited passage actually supports the associated claim.</li>
+      </ol>
+      <p>Do not invent page numbers or citations after generation. For high-stakes applications, use claim-level attribution and human review rather than relying only on the presence of a citation.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">29</span><span class="qtext">How would you scale RAG to millions of documents?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li>Use scalable storage and a vector or search index suited to the corpus and workload.</li>
+        <li>Batch document processing and embedding generation.</li>
+        <li>Use asynchronous, incremental ingestion instead of rebuilding everything for each update.</li>
+        <li>Choose an appropriate ANN index and tune recall versus latency.</li>
+        <li>Partition or shard data where it improves operational performance.</li>
+        <li>Apply metadata filtering, tenant isolation, and deduplication.</li>
+        <li>Monitor index size, throughput, query latency, ingestion lag, and retrieval quality.</li>
+      </ul>
+      <p>At this scale, operational reliability matters as much as retrieval algorithms: retries, idempotent ingestion, backups, index migrations, and observability are essential.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">30</span><span class="qtext">What is parent-child chunking?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Parent-child chunking indexes small <strong>child chunks</strong> for precise retrieval but associates them with larger <strong>parent sections</strong> for additional context.</p>
+      <pre>Document
+  └── Parent section
+       ├── Child chunk A
+       ├── Child chunk B  ← retrieved match
+       └── Child chunk C
+
+Retrieve child B → return parent or
+a bounded surrounding section</pre>
+      <p>Small children can improve matching precision, while the parent restores context for generation. The trade-off is that returning entire parents can increase prompt size and reintroduce irrelevant text.</p>
+    </div>
+  </details>
+
+  <h2 class="section-title">04 / <span>Production Scenarios & Debugging</span></h2>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">31</span><span class="qtext">The right context is retrieved, but the LLM still hallucinates. Why?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Retrieval success does not guarantee generation success. The model may ignore evidence, misinterpret it, combine contradictory passages, or answer from prior knowledge.</p>
+      <p>Debugging approach:</p>
+      <ol>
+        <li>Inspect the exact final prompt, not just the retrieved chunks.</li>
+        <li>Check whether the evidence directly answers the question.</li>
+        <li>Remove noisy or contradictory passages and improve ordering.</li>
+        <li>Instruct the model to distinguish supported facts from unknown information.</li>
+        <li>Require citations and validate claim-to-source support.</li>
+        <li>Test with adversarial and insufficient-context examples.</li>
+      </ol>
+      <p>If the evidence is insufficient, the system should ask for clarification or abstain rather than fabricate details.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">32</span><span class="qtext">How do you choose chunk overlap, and what happens if it is too high?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Overlap repeats a portion of text between adjacent chunks so that ideas crossing a chunk boundary are less likely to be lost.</p>
+      <p>Too little overlap may split definitions or procedures. Too much overlap creates redundant vectors, increases storage and indexing costs, and can cause near-duplicate retrieval results to crowd out diverse evidence.</p>
+      <p>Start with a modest overlap, perhaps 10–20% of the chunk length, then evaluate. Structure-aware chunking may reduce the need for overlap. Deduplicate retrieved passages when necessary.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">33</span><span class="qtext">Retrieval is slow for a large knowledge base. How do you debug it?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Break down the total query time into embedding, search, filtering, reranking, context construction, and generation.</p>
+      <ul>
+        <li>Check index configuration, memory pressure, shard distribution, and query selectivity.</li>
+        <li>Reduce candidate count only if retrieval quality remains acceptable.</li>
+        <li>Use efficient ANN search and appropriate batching.</li>
+        <li>Optimize expensive metadata filters and reranking.</li>
+        <li>Cache repeat queries where safe.</li>
+        <li>Measure p95 and p99 latency to identify outliers.</li>
+      </ul>
+      <p>Do not optimize vector search first if generation or reranking is actually dominating latency.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">34</span><span class="qtext">How do you prevent duplicate results in retrieval?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li>Deduplicate identical files using content hashes.</li>
+        <li>Use canonical document IDs and stable chunk IDs.</li>
+        <li>Remove repeated boilerplate where appropriate.</li>
+        <li>Collapse identical or near-identical chunks during retrieval.</li>
+        <li>Use diversity-aware ranking, such as maximal marginal relevance (MMR), when appropriate.</li>
+      </ul>
+      <p>Do not blindly remove every similar chunk: two passages may look similar but belong to different versions, products, or policies. Preserve source identity and version information.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">35</span><span class="qtext">How do you implement per-user access control in RAG?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Enforce authorization before restricted content can enter the model's context.</p>
+      <ol>
+        <li>Authenticate the user and determine trusted permissions.</li>
+        <li>Associate each document and chunk with tenant and access-control metadata.</li>
+        <li>Apply server-controlled permission filters during retrieval.</li>
+        <li>Revalidate access for cached results and source links.</li>
+        <li>Prevent cross-tenant leakage in caches, logs, and background jobs.</li>
+        <li>Test with users who should and should not access each document.</li>
+      </ol>
+      <p>Never rely on a prompt such as “do not reveal confidential information” as the primary security boundary. The model should never receive unauthorized evidence in the first place.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">36</span><span class="qtext">How do you handle domain-specific jargon and acronyms?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li>Use a domain-relevant embedding model when benchmarks justify it.</li>
+        <li>Combine dense retrieval with BM25 or exact keyword search.</li>
+        <li>Expand known acronyms and aliases during indexing or query processing.</li>
+        <li>Preserve technical identifiers, equations, and code during parsing.</li>
+        <li>Include definitions and glossary entries in the searchable corpus.</li>
+        <li>Evaluate using real queries from domain experts.</li>
+      </ul>
+      <p>Query expansion should preserve the original query because generated expansions may be incorrect or change its intent.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Advanced">
+    <summary class="question"><span class="qnum">37</span><span class="qtext">How would you extend text RAG to images, charts, and tables?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Build a multimodal ingestion pipeline that preserves relationships between visual content and its source document.</p>
+      <ul>
+        <li><strong>Images:</strong> Use OCR, captions, visual embeddings, or a vision-language model as appropriate.</li>
+        <li><strong>Tables:</strong> Preserve headers, row-column relationships, units, and captions; consider structured extraction.</li>
+        <li><strong>Charts:</strong> Extract labels, axes, units, legends, and values when possible.</li>
+        <li><strong>Retrieval:</strong> Search extracted text, structured records, image embeddings, or a combination.</li>
+        <li><strong>Generation:</strong> Supply relevant text, table data, or original image crops to a capable model.</li>
+      </ul>
+      <p>Always retain source-page and region metadata so the system can cite or display the original evidence.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">38</span><span class="qtext">How do you version a RAG knowledge base?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Track the version of the source content and the processing configuration that produced each index.</p>
+      <ul>
+        <li>Document version, content hash, source timestamp, and deletion status.</li>
+        <li>Parser, chunking strategy, and chunking parameters.</li>
+        <li>Embedding model and version.</li>
+        <li>Index schema and configuration.</li>
+        <li>Ingestion job ID, status, and error details.</li>
+      </ul>
+      <p>For a major re-index, build a new index, run quality checks, switch traffic only after validation, and retain a rollback path. Avoid mixing incompatible embedding spaces without a deliberate migration plan.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">39</span><span class="qtext">A multi-hop question fails even though each individual fact exists. Why?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>The system may retrieve only one fact, fail to connect entities across passages, or make an unsupported inference between them.</p>
+      <p>For example, answering “Which team manages the product owned by the company that acquired X?” requires several linked facts.</p>
+      <ol>
+        <li>Break the question into explicit hops.</li>
+        <li>Retrieve evidence for the first relation.</li>
+        <li>Use that result to formulate the next query.</li>
+        <li>Preserve evidence and provenance for every hop.</li>
+        <li>Verify the final relationship across all supporting sources.</li>
+      </ol>
+      <p>Graph retrieval, query decomposition, and iterative retrieval can help. Evaluate each hop separately to identify where the chain breaks.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">40</span><span class="qtext">What if retrieved documents contradict each other?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Do not simply let the LLM choose whichever statement appears most convincing.</p>
+      <ul>
+        <li>Check document timestamps and versions.</li>
+        <li>Prefer authoritative sources according to a defined source hierarchy.</li>
+        <li>Distinguish current policy from historical records.</li>
+        <li>Preserve provenance for both claims.</li>
+        <li>Use explicit conflict-resolution rules where the domain requires them.</li>
+        <li>If the conflict cannot be resolved, explain the discrepancy or escalate.</li>
+      </ul>
+      <p>Source authority and recency should be encoded as explicit signals rather than assumed to be reflected in vector similarity.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">41</span><span class="qtext">How do you prevent outdated answers when knowledge changes frequently?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>Freshness depends on both the source of truth and the time taken to make updates searchable.</p>
+      <ul>
+        <li>Use incremental ingestion with change detection.</li>
+        <li>Track document versions and effective dates.</li>
+        <li>Remove superseded records or mark them as historical.</li>
+        <li>Apply freshness-aware ranking where appropriate.</li>
+        <li>Use direct database or API lookups for rapidly changing values.</li>
+        <li>Invalidate caches when relevant data changes.</li>
+        <li>Monitor ingestion lag and test that deletions propagate.</li>
+      </ul>
+      <p>A current timestamp on a chunk does not guarantee that its contents are current. Validate against the authoritative source.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">42</span><span class="qtext">How do you handle complex PDFs with tables, columns, headers, and footnotes?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>PDF extraction is a layout-understanding problem as well as a text-extraction problem.</p>
+      <ol>
+        <li>Determine whether the PDF contains selectable text or scanned images.</li>
+        <li>Use layout-aware parsing and OCR when needed.</li>
+        <li>Detect columns, headings, reading order, tables, captions, and footnotes.</li>
+        <li>Preserve page numbers, section hierarchy, and table structure.</li>
+        <li>Validate extracted output against representative original pages.</li>
+        <li>Chunk according to logical sections rather than raw page boundaries alone.</li>
+      </ol>
+      <p>For tables, retain headers with the values. For multi-column layouts, verify reading order. For scanned documents, inspect OCR quality and avoid silently indexing corrupted text.</p>
+    </div>
+  </details>
+
+  <h2 class="section-title">05 / <span>Bonus: Production-Ready Thinking</span></h2>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">43</span><span class="qtext">How do you protect a RAG system against prompt injection in documents?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <p>A retrieved document may contain malicious instructions designed to override the system prompt, reveal secrets, or trigger unsafe tool calls.</p>
+      <ul>
+        <li>Treat retrieved content as untrusted data, not instructions.</li>
+        <li>Keep system instructions separate from source text.</li>
+        <li>Enforce authorization and tool permissions outside the model.</li>
+        <li>Do not allow documents to grant themselves access or authorize actions.</li>
+        <li>Validate tool arguments and restrict tools to least privilege.</li>
+        <li>Test with adversarial documents and indirect prompt-injection examples.</li>
+      </ul>
+      <p>Prompt instructions alone are not sufficient security controls. Sensitive actions require trusted application logic and appropriate authorization.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">44</span><span class="qtext">What would you monitor in a production RAG system?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ul>
+        <li><strong>Retrieval:</strong> Recall@k, relevance, empty-result rate, score distributions.</li>
+        <li><strong>Generation:</strong> Correctness, faithfulness, citation validity, abstention quality.</li>
+        <li><strong>Operations:</strong> Latency percentiles, error rates, throughput, availability.</li>
+        <li><strong>Cost:</strong> Embedding calls, reranking calls, input/output tokens, storage.</li>
+        <li><strong>Freshness:</strong> Ingestion lag, failed updates, stale records.</li>
+        <li><strong>Security:</strong> Authorization failures, suspicious retrieval patterns, cross-tenant leakage tests.</li>
+      </ul>
+      <p>Use privacy-conscious logs and avoid storing sensitive document content unnecessarily. Alerts should focus on meaningful regressions and user impact.</p>
+    </div>
+  </details>
+
+  <details class="card" data-category="Production">
+    <summary class="question"><span class="qnum">45</span><span class="qtext">How do you build a reliable RAG evaluation dataset?</span><span class="chevron">＋</span></summary>
+    <div class="answer">
+      <ol>
+        <li>Collect representative real-world questions and edge cases.</li>
+        <li>Associate questions with trusted answers and supporting source passages.</li>
+        <li>Include unanswerable questions, ambiguous queries, and conflicting sources.</li>
+        <li>Include exact-match, semantic, multi-hop, table, and domain-specific questions.</li>
+        <li>Split development and held-out evaluation data to reduce overfitting.</li>
+        <li>Compare changes using the same benchmark and inspect regressions manually.</li>
+      </ol>
+      <p>Measure retrieval quality separately from answer quality. A final answer can look correct by coincidence even when retrieval failed, so end-to-end accuracy alone is insufficient for diagnosis.</p>
+    </div>
+  </details>
+
+  </div>
+
+  <div id="empty">No matching questions. Try another search term.</div>
+
+  <h2 class="section-title">06 / <span>Final Interview Checklist</span></h2>
+  <div class="card" style="padding:20px">
+    <p>Before your interview, make sure you can explain these without reading the answers:</p>
+    <div id="checklist">
+      <label class="revise"><input type="checkbox"> Draw and explain the complete RAG architecture.</label>
+      <label class="revise"><input type="checkbox"> Compare chunking strategies and justify your chosen settings.</label>
+      <label class="revise"><input type="checkbox"> Explain embeddings, vector databases, BM25, and hybrid search.</label>
+      <label class="revise"><input type="checkbox"> Explain reranking and why it can improve retrieval.</label>
+      <label class="revise"><input type="checkbox"> Distinguish RAG evaluation metrics and diagnose failures.</label>
+      <label class="revise"><input type="checkbox"> Explain RAG versus fine-tuning and long-context prompting.</label>
+      <label class="revise"><input type="checkbox"> Design access control, freshness, and document-update pipelines.</label>
+      <label class="revise"><input type="checkbox"> Explain how to handle multi-hop questions and conflicting evidence.</label>
+      <label class="revise"><input type="checkbox"> Discuss latency, cost, observability, and production scaling.</label>
+      <label class="revise"><input type="checkbox"> Defend the design choices in your own RAG project.</label>
+    </div>
+  </div>
+
+  <div class="tip" style="margin-top:28px">
+    <strong>Placement strategy:</strong> Knowing definitions is only the first step. Be prepared to explain why you selected a chunk size, how you measured retrieval quality, what happens when retrieval fails, and how you would improve a real implementation.
+  </div>
+</main>
+
+<footer>RAG PREP · Interview Revision Guide · Built for offline use</footer>
+
+<script>
+const cards = [...document.querySelectorAll('details.card')];
+const search = document.getElementById('search');
+const filterButtons = [...document.querySelectorAll('[data-filter]')];
+let activeFilter = 'all';
+
+function applyFilters() {
+  const query = search.value.toLowerCase().trim();
+  let visible = 0;
+
+  cards.forEach(card => {
+    const category = card.dataset.category;
+    const matchesCategory = activeFilter === 'all' || category === activeFilter;
+    const matchesQuery = card.innerText.toLowerCase().includes(query);
+    const show = matchesCategory && matchesQuery;
+
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  document.getElementById('empty').style.display = visible ? 'none' : 'block';
+  document.getElementById('expand').textContent = 'Expand all';
+  document.getElementById('collapse').textContent = 'Collapse all';
+}
+
+search.addEventListener('input', applyFilters);
+
+filterButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    activeFilter = button.dataset.filter;
+    filterButtons.forEach(b => b.classList.toggle('active', b === button));
+    applyFilters();
+  });
+});
+
+document.getElementById('expand').addEventListener('click', () => {
+  cards.forEach(card => {
+    if (card.style.display !== 'none') card.open = true;
+  });
+});
+
+document.getElementById('collapse').addEventListener('click', () => {
+  cards.forEach(card => card.open = false);
+});
+
+cards.forEach(card => {
+  const summary = card.querySelector('summary');
+  const icon = summary.querySelector('.chevron');
+
+  card.addEventListener('toggle', () => {
+    icon.textContent = card.open ? '−' : '＋';
+  });
+
+  const label = document.createElement('label');
+  label.className = 'revise';
+  label.innerHTML = '<input type="checkbox"> Mark as revised';
+  label.addEventListener('click', event => event.stopPropagation());
+
+  label.querySelector('input').addEventListener('change', event => {
+    card.classList.toggle('done', event.target.checked);
+    updateProgress();
+  });
+
+  card.querySelector('.answer').appendChild(label);
+});
+
+function updateProgress() {
+  const done = cards.filter(card =>
+    card.querySelector('.revise input').checked
+  ).length;
+
+  document.getElementById('progressText').textContent =
+    `${done} / ${cards.length} completed`;
+
+  document.getElementById('progressBar').style.width =
+    `${done / cards.length * 100}%`;
+}
+
+document.querySelectorAll('#checklist input').forEach(input => {
+  input.addEventListener('change', () => {
+    input.parentElement.style.color = input.checked
+      ? 'var(--green)' : 'var(--muted)';
+  });
+});
+</script>
+</body>
+</html>
